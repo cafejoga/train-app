@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>電車カウントダウン</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #0f172a;
+  color: white;
+}
+
+.header {
+  padding: 20px;
+  font-size: 20px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.card {
+  background: #1e293b;
+  margin: 15px;
+  padding: 20px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+.label {
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+.time {
+  font-size: 32px;
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+.count {
+  font-size: 24px;
+  margin-top: 10px;
+  color: #38bdf8;
+}
+
+.footer {
+  position: fixed;
+  bottom: 10px;
+  width: 100%;
+  text-align: center;
+  font-size: 12px;
+  color: #64748b;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">🚃 電車カウントダウン</div>
+
+<div class="card">
+  <div class="label">次の電車</div>
+  <div id="nextTime" class="time">--</div>
+  <div id="nextCount" class="count">--</div>
+</div>
+
+<div class="card">
+  <div class="label">その次</div>
+  <div id="secondTime" class="time">--</div>
+  <div id="secondCount" class="count">--</div>
+</div>
+
+<div class="footer">Safari → 共有 → ホーム画面に追加でアプリ化</div>
+
+<script>
+// ===== 時刻データ =====
+const trainTimes = [
+  "16:08","16:23","16:38","16:53",
+  "17:08","17:23","17:30","17:53",
+  "18:08","18:24","18:35","18:49","18:55",
+  "19:05","19:10","19:26","19:36","19:49","19:55",
+  "20:06","20:20","20:25","20:38","20:53"
+];
+
+// ===== 時刻生成（iPhone対策済）=====
+function createTargetTime(timeStr, isTomorrow=false) {
+  const parts = timeStr.split(":");
+  const h = Number(parts[0]);
+  const m = Number(parts[1]);
+
+  if (isNaN(h) || isNaN(m)) return null;
+
+  const now = new Date();
+  const target = new Date(now);
+
+  target.setHours(h);
+  target.setMinutes(m);
+  target.setSeconds(0);
+  target.setMilliseconds(0);
+
+  if (isTomorrow) {
+    target.setDate(target.getDate() + 1);
+  }
+
+  return target;
+}
+
+// ===== 残り時間表示 =====
+function formatRemain(ms) {
+  if (ms <= 0) return "まもなく発車";
+
+  const m = Math.floor(ms / 60000);
+  const s = Math.floor((ms % 60000) / 1000);
+
+  return `${m}分 ${s}秒`;
+}
+
+// ===== メイン処理 =====
+function update() {
+  const now = new Date();
+  let upcoming = [];
+
+  for (let t of trainTimes) {
+    const target = createTargetTime(t);
+    if (target && target > now) {
+      upcoming.push({ time: t, target });
+    }
+  }
+
+  // 今日なければ明日
+  if (upcoming.length === 0) {
+    const first = trainTimes[0];
+    const target = createTargetTime(first, true);
+
+    upcoming.push({
+      time: first + "（明日）",
+      target: target
+    });
+  }
+
+  // 次の電車
+  if (upcoming.length > 0) {
+    const next = upcoming[0];
+    document.getElementById("nextTime").innerText = next.time;
+    document.getElementById("nextCount").innerText =
+      "あと " + formatRemain(next.target - now);
+  }
+
+  // 2番目
+  if (upcoming.length > 1) {
+    const second = upcoming[1];
+    document.getElementById("secondTime").innerText = second.time;
+    document.getElementById("secondCount").innerText =
+      "あと " + formatRemain(second.target - now);
+  } else {
+    document.getElementById("secondTime").innerText = "-";
+    document.getElementById("secondCount").innerText = "";
+  }
+}
+
+// ===== 起動 =====
+setInterval(update, 1000);
+update();
+</script>
+
+</body>
+</html>
