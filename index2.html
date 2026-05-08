@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>大垣駅トレインカウント</title>
+
+<link
+rel="stylesheet"
+href="https://unpkg.com/leaflet/dist/leaflet.css"
+/>
+
+<script
+src="https://unpkg.com/leaflet/dist/leaflet.js">
+</script>
+
+<style>
+
+body{
+   margin:0;
+   background:#0f0f12;
+   color:white;
+   font-family:
+   -apple-system,
+   BlinkMacSystemFont,
+   sans-serif;
+}
+
+/* ======================
+  上半分
+====================== */
+
+#top{
+
+   height:45vh;
+
+   display:flex;
+   flex-direction:column;
+
+   justify-content:center;
+
+   padding:20px;
+
+   box-sizing:border-box;
+
+   background:
+   linear-gradient(
+     to bottom,
+     #1b1b22,
+     #101015
+   );
+}
+
+.trainCard{
+
+   background:#1a1a22;
+
+   border-radius:20px;
+
+   padding:18px;
+
+   margin-bottom:16px;
+
+   box-shadow:
+   0 4px 20px
+   rgba(0,0,0,0.4);
+}
+
+.label{
+
+   font-size:1.2rem;
+
+   opacity:0.8;
+
+   margin-bottom:10px;
+}
+
+.row{
+
+   display:flex;
+
+   align-items:center;
+
+   justify-content:space-between;
+}
+
+.time{
+
+   font-size:4rem;
+
+   font-weight:700;
+
+   line-height:1;
+}
+
+.type{
+
+   font-size:1.6rem;
+
+   padding:8px 14px;
+
+   border-radius:14px;
+
+   font-weight:bold;
+}
+
+.shinkaisoku{
+   background:#ff7a00;
+}
+
+.futsu{
+   background:#d9d9d9;
+   color:black;
+}
+
+.remaining{
+
+   margin-top:10px;
+
+   font-size:2rem;
+
+   opacity:0.9;
+}
+
+#distanceBox{
+
+   text-align:center;
+
+   font-size:2.5rem;
+
+   font-weight:bold;
+
+   margin-top:10px;
+}
+
+/* ======================
+  地図
+====================== */
+
+#map{
+   height:55vh;
+}
+
+/* Leaflet調整 */
+
+.leaflet-container{
+   background:#ddd;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="top">
+
+   <div class="trainCard">
+
+       <div class="label">
+           次の電車
+       </div>
+
+       <div class="row">
+
+           <div
+             class="time"
+             id="nextTime">
+             --
+           </div>
+
+           <div
+             class="type shinkaisoku"
+             id="nextType">
+             --
+           </div>
+
+       </div>
+
+       <div
+         class="remaining"
+         id="nextRemain">
+         --
+       </div>
+
+   </div>
+
+   <div class="trainCard">
+
+       <div class="label">
+           その次
+       </div>
+
+       <div class="row">
+
+           <div
+             class="time"
+             style="color:#4f8cff"
+             id="secondTime">
+             --
+           </div>
+
+           <div
+             class="type futsu"
+             id="secondType">
+             --
+           </div>
+
+       </div>
+
+       <div
+         class="remaining"
+         style="color:#6ea0ff"
+         id="secondRemain">
+         --
+       </div>
+
+   </div>
+
+   <div id="distanceBox">
+       駅まで --m
+   </div>
+
+</div>
+
+<div id="map"></div>
+
+<script>
+
+/* ======================
+  大垣駅
+====================== */
+
+const station = {
+
+   name:"大垣駅",
+
+   lat:35.367149,
+
+   lng:136.617332
+};
+
+/* ======================
+  朝の時刻表
+====================== */
+
+const trains = [
+
+{time:"05:00",type:"普通"},
+{time:"05:21",type:"普通"},
+{time:"05:31",type:"普通"},
+{time:"05:42",type:"普通"},
+{time:"05:51",type:"区間快速"},
+
+{time:"06:07",type:"新快速"},
+{time:"06:13",type:"普通"},
+{time:"06:24",type:"新快速"},
+{time:"06:30",type:"新快速"},
+{time:"06:44",type:"普通"},
+{time:"06:53",type:"新快速"},
+{time:"06:56",type:"ホームライナー"},
+
+{time:"07:01",type:"新快速"},
+{time:"07:06",type:"普通"},
+{time:"07:11",type:"区間快速"},
+{time:"07:16",type:"快速"},
+{time:"07:22",type:"新快速"},
+{time:"07:27",type:"普通"},
+{time:"07:32",type:"区間快速"},
+{time:"07:37",type:"快速"}
+
+];
+
+/* ======================
+  地図
+====================== */
+
+const map = L.map('map')
+.setView(
+[station.lat, station.lng],
+15
+);
+
+L.tileLayer(
+'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+{
+  attribution:
+  '&copy; OpenStreetMap'
+}
+).addTo(map);
+
+/* 駅 */
+
+L.marker([
+station.lat,
+station.lng
+])
+.addTo(map)
+.bindPopup("大垣駅");
+
+/* ユーザー */
+
+let userMarker;
+
+/* ======================
+  距離計算
+====================== */
+
+function calcDistance(
+lat1,
+lon1,
+lat2,
+lon2
+){
+
+const R = 6371000;
+
+const toRad =
+deg => deg * Math.PI/180;
+
+const dLat =
+toRad(lat2-lat1);
+
+const dLon =
+toRad(lon2-lon1);
+
+const a =
+
+Math.sin(dLat/2)
+*
+Math.sin(dLat/2)
+
++
+
+Math.cos(toRad(lat1))
+*
+Math.cos(toRad(lat2))
+
+*
+Math.sin(dLon/2)
+*
+Math.sin(dLon/2);
+
+const c =
+2 *
+Math.atan2(
+ Math.sqrt(a),
+ Math.sqrt(1-a)
+);
+
+return Math.round(R*c);
+}
+
+/* ======================
+  時刻更新
+====================== */
+
+function updateTrains(){
+
+const now = new Date();
+
+let upcoming = [];
+
+for(let train of trains){
+
+  const [h,m] =
+  train.time.split(":");
+
+  const trainDate =
+  new Date();
+
+  trainDate.setHours(h);
+  trainDate.setMinutes(m);
+  trainDate.setSeconds(0);
+
+  if(trainDate > now){
+
+    const diffSec =
+    Math.floor(
+     (trainDate-now)/1000
+    );
+
+    upcoming.push({
+
+      ...train,
+
+      diffSec
+
+    });
+  }
+}
+
+if(upcoming.length >= 1){
+
+  const t = upcoming[0];
+
+  const min =
+  Math.floor(
+   t.diffSec/60
+  );
+
+  const sec =
+  t.diffSec % 60;
+
+  document
+  .getElementById(
+   "nextTime"
+  ).innerText =
+  t.time;
+
+  document
+  .getElementById(
+   "nextType"
+  ).innerText =
+  t.type;
+
+  document
+  .getElementById(
+   "nextRemain"
+  ).innerText =
+  `あと ${min}分${sec}秒`;
+}
+
+if(upcoming.length >= 2){
+
+  const t = upcoming[1];
+
+  const min =
+  Math.floor(
+   t.diffSec/60
+  );
+
+  const sec =
+  t.diffSec % 60;
+
+  document
+  .getElementById(
+   "secondTime"
+  ).innerText =
+  t.time;
+
+  document
+  .getElementById(
+   "secondType"
+  ).innerText =
+  t.type;
+
+  document
+  .getElementById(
+   "secondRemain"
+  ).innerText =
+  `あと ${min}分${sec}秒`;
+}
+
+}
+
+/* ======================
+  GPS
+====================== */
+
+navigator.geolocation
+.watchPosition(
+
+position => {
+
+  const lat =
+  position.coords.latitude;
+
+  const lng =
+  position.coords.longitude;
+
+  /* マーカー */
+
+  if(userMarker){
+
+    map.removeLayer(
+     userMarker
+    );
+  }
+
+  userMarker =
+  L.marker([lat,lng])
+  .addTo(map)
+  .bindPopup("現在地");
+
+  /* 中心移動 */
+
+  map.setView(
+   [lat,lng],
+   16
+  );
+
+  /* 距離 */
+
+  const dist =
+  calcDistance(
+   lat,
+   lng,
+   station.lat,
+   station.lng
+  );
+
+  document
+  .getElementById(
+   "distanceBox"
+  ).innerText =
+  `駅まで ${dist}m`;
+
+},
+
+error => {
+
+  alert(
+   "GPSを許可してください"
+  );
+
+},
+
+{
+  enableHighAccuracy:true
+}
+
+);
+
+/* ======================
+  起動
+====================== */
+
+updateTrains();
+
+setInterval(
+updateTrains,
+1000
+);
+
+</script>
+
+</body>
+</html>
