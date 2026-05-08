@@ -2,168 +2,697 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>電車カウントダウン</title>
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>西岐阜駅 自転車トレインナビ</title>
 
 <style>
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #0f172a;
-  color: white;
+
+body{
+    margin:0;
+    color:white;
+    font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+
+    background:
+    linear-gradient(
+      to bottom,
+      #163832,
+      #0d1f2a
+    );
 }
 
-.header {
-  padding: 20px;
-  font-size: 20px;
-  text-align: center;
-  font-weight: bold;
+/* ======================
+   全体
+====================== */
+
+#top{
+
+    min-height:100vh;
+
+    padding:18px;
+
+    box-sizing:border-box;
 }
 
-.card {
-  background: #1e293b;
-  margin: 15px;
-  padding: 20px;
-  border-radius: 20px;
-  text-align: center;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+/* ======================
+   カード
+====================== */
+
+.trainCard{
+
+    background:#1c2635;
+
+    border-radius:24px;
+
+    padding:20px;
+
+    margin-bottom:18px;
+
+    box-shadow:
+    0 8px 24px
+    rgba(0,0,0,0.35);
 }
 
-.label {
-  font-size: 14px;
-  color: #94a3b8;
+.label{
+
+    font-size:1.2rem;
+
+    opacity:0.85;
+
+    margin-bottom:12px;
 }
 
-.time {
-  font-size: 32px;
-  font-weight: bold;
-  margin-top: 5px;
+.row{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
 }
 
-.count {
-  font-size: 24px;
-  margin-top: 10px;
-  color: #38bdf8;
+.time{
+
+    font-size:4.3rem;
+
+    font-weight:700;
+
+    line-height:1;
 }
 
-.footer {
-  position: fixed;
-  bottom: 10px;
-  width: 100%;
-  text-align: center;
-  font-size: 12px;
-  color: #64748b;
+.type{
+
+    font-size:1.2rem;
+
+    padding:8px 14px;
+
+    border-radius:16px;
+
+    font-weight:bold;
 }
+
+/* ======================
+   種別カラー
+====================== */
+
+.普通{
+    background:#ddd;
+    color:black;
+}
+
+.快速{
+    background:#2f80ff;
+}
+
+.新快速{
+    background:#ff8a00;
+}
+
+.区間快速{
+    background:#37d34a;
+    color:black;
+}
+
+.特別快速{
+    background:#ffe100;
+    color:black;
+}
+
+/* ======================
+   残り時間
+====================== */
+
+.remaining{
+
+    margin-top:14px;
+
+    font-size:2rem;
+}
+
+/* ======================
+   距離
+====================== */
+
+#distanceBox{
+
+    text-align:center;
+
+    font-size:2.4rem;
+
+    font-weight:bold;
+
+    margin-top:22px;
+}
+
+/* ======================
+   自転車
+====================== */
+
+#bikeTime{
+
+    text-align:center;
+
+    font-size:2rem;
+
+    margin-top:10px;
+
+    color:#9ee6ff;
+}
+
+/* ======================
+   判定
+====================== */
+
+#judgeBox{
+
+    margin-top:20px;
+
+    text-align:center;
+
+    font-size:2.6rem;
+
+    font-weight:bold;
+
+    padding:18px;
+
+    border-radius:20px;
+
+    transition:0.3s;
+}
+
 </style>
 </head>
 
 <body>
 
-<div class="header">🚃 電車カウントダウン</div>
+<div id="top">
 
-<div class="card">
-  <div class="label">次の電車</div>
-  <div id="nextTime" class="time">--</div>
-  <div id="nextCount" class="count">--</div>
+    <!-- 次の電車 -->
+
+    <div class="trainCard">
+
+        <div class="label">
+            次の電車
+        </div>
+
+        <div class="row">
+
+            <div
+             class="time"
+             id="nextTime">
+             --
+            </div>
+
+            <div
+             class="type"
+             id="nextType">
+             --
+            </div>
+
+        </div>
+
+        <div
+         class="remaining"
+         id="nextRemain">
+         --
+        </div>
+
+    </div>
+
+    <!-- その次 -->
+
+    <div class="trainCard">
+
+        <div class="label">
+            その次
+        </div>
+
+        <div class="row">
+
+            <div
+             class="time"
+             style="color:#7cb6ff"
+             id="secondTime">
+             --
+            </div>
+
+            <div
+             class="type"
+             id="secondType">
+             --
+            </div>
+
+        </div>
+
+        <div
+         class="remaining"
+         style="color:#8fc2ff"
+         id="secondRemain">
+         --
+        </div>
+
+    </div>
+
+    <!-- 距離 -->
+
+    <div id="distanceBox">
+        駅まで --m
+    </div>
+
+    <!-- 自転車 -->
+
+    <div id="bikeTime">
+        🚲 --
+    </div>
+
+    <!-- 判定 -->
+
+    <div id="judgeBox">
+        判定中...
+    </div>
+
 </div>
-
-<div class="card">
-  <div class="label">その次</div>
-  <div id="secondTime" class="time">--</div>
-  <div id="secondCount" class="count">--</div>
-</div>
-
-<div class="footer">Safari → 共有 → ホーム画面に追加でアプリ化</div>
 
 <script>
-// ===== 時刻データ =====
-const trainTimes = [
-  "16:08","16:23","16:38","16:53",
-  "17:08","17:23","17:30","17:53",
-  "18:08","18:24","18:35","18:49","18:55",
-  "19:05","19:10","19:26","19:36","19:49","19:55",
-  "20:06","20:20","20:25","20:38","20:53"
+
+/* ======================
+   西岐阜駅
+====================== */
+
+const station = {
+
+    name:"西岐阜駅",
+
+    lat:35.4046698,
+
+    lng:136.7234266
+};
+
+/* ======================
+   時刻表
+====================== */
+
+const trains = [
+
+{time:"06:08",type:"普通"},
+{time:"06:40",type:"普通"},
+{time:"06:53",type:"普通"},
+
+{time:"07:09",type:"新快速"},
+{time:"07:23",type:"区間快速"},
+{time:"07:37",type:"特別快速"},
+{time:"07:49",type:"普通"},
+{time:"07:56",type:"新快速"},
+
+{time:"08:17",type:"特別快速"},
+{time:"08:26",type:"快速"},
+{time:"08:36",type:"特別快速"},
+{time:"08:45",type:"快速"},
+{time:"08:57",type:"特別快速"},
+
+{time:"09:09",type:"特別快速"},
+{time:"09:30",type:"特別快速"},
+{time:"09:42",type:"特別快速"},
+{time:"09:55",type:"新快速"},
+{time:"09:59",type:"快速"},
+
+{time:"10:18",type:"特別快速"},
+{time:"10:23",type:"新快速"},
+{time:"10:37",type:"新快速"},
+{time:"10:52",type:"快速"},
+
+{time:"11:07",type:"新快速"},
+{time:"11:22",type:"快速"},
+{time:"11:37",type:"新快速"},
+{time:"11:52",type:"快速"},
+
+{time:"12:09",type:"新快速"},
+{time:"12:22",type:"快速"},
+{time:"12:38",type:"新快速"},
+{time:"12:52",type:"快速"},
+
+{time:"13:08",type:"新快速"},
+{time:"13:23",type:"快速"},
+{time:"13:38",type:"新快速"},
+{time:"13:53",type:"快速"},
+
+{time:"14:09",type:"新快速"},
+{time:"14:22",type:"快速"},
+{time:"14:38",type:"新快速"},
+{time:"14:52",type:"快速"},
+
+{time:"15:08",type:"新快速"},
+{time:"15:23",type:"快速"},
+{time:"15:38",type:"新快速"},
+{time:"15:53",type:"快速"},
+
+{time:"16:08",type:"新快速"},
+{time:"16:23",type:"快速"},
+{time:"16:38",type:"新快速"},
+{time:"16:53",type:"快速"},
+
+{time:"17:08",type:"新快速"},
+{time:"17:23",type:"快速"},
+{time:"17:38",type:"新快速"},
+{time:"17:53",type:"快速"},
+
+{time:"18:08",type:"新快速"},
+{time:"18:24",type:"快速"},
+{time:"18:35",type:"特別快速"},
+{time:"18:49",type:"特別快速"},
+{time:"18:55",type:"快速"},
+
+{time:"19:05",type:"特別快速"},
+{time:"19:19",type:"特別快速"},
+{time:"19:26",type:"快速"},
+{time:"19:36",type:"特別快速"},
+{time:"19:49",type:"快速"},
+{time:"19:55",type:"新快速"},
+
+{time:"20:06",type:"特別快速"},
+{time:"20:20",type:"快速"},
+{time:"20:25",type:"新快速"},
+{time:"20:38",type:"特別快速"},
+{time:"20:53",type:"新快速"},
+
+{time:"21:08",type:"特別快速"},
+{time:"21:23",type:"新快速"},
+{time:"21:38",type:"特別快速"},
+{time:"21:53",type:"新快速"},
+
+{time:"22:08",type:"特別快速"},
+{time:"22:23",type:"区間快速"},
+{time:"22:38",type:"新快速"},
+{time:"22:53",type:"区間快速"},
+
+{time:"23:13",type:"快速"},
+{time:"23:23",type:"区間快速"},
+{time:"23:39",type:"新快速"},
+{time:"23:57",type:"区間快速"}
+
 ];
 
-// ===== 時刻生成（iPhone対策済）=====
-function createTargetTime(timeStr, isTomorrow=false) {
-  const parts = timeStr.split(":");
-  const h = Number(parts[0]);
-  const m = Number(parts[1]);
+/* ======================
+   次の電車
+====================== */
 
-  if (isNaN(h) || isNaN(m)) return null;
+let upcoming = [];
 
-  const now = new Date();
-  const target = new Date(now);
+function updateTrains(){
 
-  target.setHours(h);
-  target.setMinutes(m);
-  target.setSeconds(0);
-  target.setMilliseconds(0);
+ const now = new Date();
 
-  if (isTomorrow) {
-    target.setDate(target.getDate() + 1);
-  }
+ upcoming = [];
 
-  return target;
+ for(let train of trains){
+
+   const [h,m] =
+   train.time.split(":");
+
+   const trainDate =
+   new Date();
+
+   trainDate.setHours(h);
+   trainDate.setMinutes(m);
+   trainDate.setSeconds(0);
+
+   if(trainDate < now){
+
+     trainDate.setDate(
+      trainDate.getDate()+1
+     );
+   }
+
+   const diffSec =
+   Math.floor(
+    (trainDate-now)/1000
+   );
+
+   upcoming.push({
+
+      ...train,
+
+      diffSec
+
+   });
+
+ }
+
+ upcoming.sort(
+   (a,b)=>
+   a.diffSec-b.diffSec
+ );
+
+ /* 次 */
+
+ const next = upcoming[0];
+
+ const nextMin =
+ Math.floor(next.diffSec/60);
+
+ const nextSec =
+ next.diffSec%60;
+
+ document
+ .getElementById(
+  "nextTime"
+ ).innerText =
+ next.time;
+
+ const nextType =
+ document.getElementById(
+  "nextType"
+ );
+
+ nextType.innerText =
+ next.type;
+
+ nextType.className =
+ "type " + next.type;
+
+ document
+ .getElementById(
+  "nextRemain"
+ ).innerText =
+ `あと ${nextMin}分 ${nextSec}秒`;
+
+ /* その次 */
+
+ const second = upcoming[1];
+
+ const secondMin =
+ Math.floor(second.diffSec/60);
+
+ const secondSec =
+ second.diffSec%60;
+
+ document
+ .getElementById(
+  "secondTime"
+ ).innerText =
+ second.time;
+
+ const secondType =
+ document.getElementById(
+  "secondType"
+ );
+
+ secondType.innerText =
+ second.type;
+
+ secondType.className =
+ "type " + second.type;
+
+ document
+ .getElementById(
+  "secondRemain"
+ ).innerText =
+ `あと ${secondMin}分 ${secondSec}秒`;
+
 }
 
-// ===== 残り時間表示 =====
-function formatRemain(ms) {
-  if (ms <= 0) return "まもなく発車";
+/* ======================
+   GPS
+====================== */
 
-  const m = Math.floor(ms / 60000);
-  const s = Math.floor((ms % 60000) / 1000);
+navigator.geolocation
+.watchPosition(
 
-  return `${m}分 ${s}秒`;
+ position => {
+
+   const lat =
+   position.coords.latitude;
+
+   const lng =
+   position.coords.longitude;
+
+   const dist =
+   calcDistance(
+    lat,
+    lng,
+    station.lat,
+    station.lng
+   );
+
+   /* 実際の道路補正 */
+
+   const realDist =
+   Math.round(dist * 1.3);
+
+   document
+   .getElementById(
+    "distanceBox"
+   ).innerText =
+   `駅まで ${realDist}m`;
+
+   /* 自転車時間 */
+
+   const bikeSec =
+   Math.floor(
+    realDist / 220 * 60
+   );
+
+   const bikeMin =
+   Math.floor(
+    bikeSec / 60
+   );
+
+   const remainSec =
+   bikeSec % 60;
+
+   document
+   .getElementById(
+    "bikeTime"
+   ).innerText =
+
+   `🚲 約${bikeMin}分${remainSec}秒`;
+
+   /* 判定 */
+
+   const nextTrainSec =
+   upcoming[0].diffSec;
+
+   const judge =
+   document.getElementById(
+    "judgeBox"
+   );
+
+   const margin =
+   nextTrainSec - bikeSec;
+
+   /* 緑 */
+
+   if(margin > 180){
+
+     judge.innerText =
+     "🟢 間に合う";
+
+     judge.style.background =
+     "#1f6f3c";
+   }
+
+   /* 黄 */
+
+   else if(margin > 0){
+
+     judge.innerText =
+     "🟡 ギリギリ";
+
+     judge.style.background =
+     "#9a7b00";
+   }
+
+   /* 赤 */
+
+   else{
+
+     judge.innerText =
+     "🔴 間に合わない";
+
+     judge.style.background =
+     "#8b1e1e";
+   }
+
+ },
+
+ error => {
+
+   alert(
+    "GPSを許可してください"
+   );
+
+ },
+
+ {
+   enableHighAccuracy:true
+ }
+
+);
+
+/* ======================
+   距離計算
+====================== */
+
+function calcDistance(
+ lat1,
+ lon1,
+ lat2,
+ lon2
+){
+
+ const R = 6371000;
+
+ const toRad =
+ deg => deg * Math.PI/180;
+
+ const dLat =
+ toRad(lat2-lat1);
+
+ const dLon =
+ toRad(lon2-lon1);
+
+ const a =
+
+ Math.sin(dLat/2)
+ *
+ Math.sin(dLat/2)
+
+ +
+
+ Math.cos(toRad(lat1))
+ *
+ Math.cos(toRad(lat2))
+
+ *
+ Math.sin(dLon/2)
+ *
+ Math.sin(dLon/2);
+
+ const c =
+ 2 *
+ Math.atan2(
+  Math.sqrt(a),
+  Math.sqrt(1-a)
+ );
+
+ return Math.round(R*c);
 }
 
-// ===== メイン処理 =====
-function update() {
-  const now = new Date();
-  let upcoming = [];
+/* ======================
+   起動
+====================== */
 
-  for (let t of trainTimes) {
-    const target = createTargetTime(t);
-    if (target && target > now) {
-      upcoming.push({ time: t, target });
-    }
-  }
+updateTrains();
 
-  // 今日なければ明日
-  if (upcoming.length === 0) {
-    const first = trainTimes[0];
-    const target = createTargetTime(first, true);
+setInterval(
+ updateTrains,
+ 1000
+);
 
-    upcoming.push({
-      time: first + "（明日）",
-      target: target
-    });
-  }
-
-  // 次の電車
-  if (upcoming.length > 0) {
-    const next = upcoming[0];
-    document.getElementById("nextTime").innerText = next.time;
-    document.getElementById("nextCount").innerText =
-      "あと " + formatRemain(next.target - now);
-  }
-
-  // 2番目
-  if (upcoming.length > 1) {
-    const second = upcoming[1];
-    document.getElementById("secondTime").innerText = second.time;
-    document.getElementById("secondCount").innerText =
-      "あと " + formatRemain(second.target - now);
-  } else {
-    document.getElementById("secondTime").innerText = "-";
-    document.getElementById("secondCount").innerText = "";
-  }
-}
-
-// ===== 起動 =====
-setInterval(update, 1000);
-update();
 </script>
 
 </body>
