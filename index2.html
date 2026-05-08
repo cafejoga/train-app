@@ -5,7 +5,7 @@
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0">
 
-<title>大垣駅トレインカウント</title>
+<title>大垣駅 トレインナビ</title>
 
 <link
 rel="stylesheet"
@@ -29,43 +29,38 @@ body{
 }
 
 /* ======================
-  上半分
+  上エリア
 ====================== */
 
 #top{
 
-   height:45vh;
+   min-height:45vh;
 
-   display:flex;
-   flex-direction:column;
-
-   justify-content:center;
-
-   padding:20px;
+   padding:18px;
 
    box-sizing:border-box;
 
    background:
    linear-gradient(
      to bottom,
-     #1b1b22,
-     #101015
+     #1a1a22,
+     #0e0e12
    );
 }
 
 .trainCard{
 
-   background:#1a1a22;
+   background:#17171f;
 
-   border-radius:20px;
+   border-radius:24px;
 
-   padding:18px;
+   padding:20px;
 
-   margin-bottom:16px;
+   margin-bottom:18px;
 
    box-shadow:
-   0 4px 20px
-   rgba(0,0,0,0.4);
+   0 8px 24px
+   rgba(0,0,0,0.35);
 }
 
 .label{
@@ -74,21 +69,21 @@ body{
 
    opacity:0.8;
 
-   margin-bottom:10px;
+   margin-bottom:12px;
 }
 
 .row{
 
    display:flex;
 
-   align-items:center;
-
    justify-content:space-between;
+
+   align-items:center;
 }
 
 .time{
 
-   font-size:4rem;
+   font-size:4.2rem;
 
    font-weight:700;
 
@@ -97,42 +92,68 @@ body{
 
 .type{
 
-   font-size:1.6rem;
+   font-size:1.3rem;
 
    padding:8px 14px;
 
-   border-radius:14px;
+   border-radius:16px;
 
    font-weight:bold;
 }
 
-.shinkaisoku{
-   background:#ff7a00;
+/* 種別色 */
+
+.普通{
+   background:#ddd;
+   color:black;
 }
 
-.futsu{
-   background:#d9d9d9;
+.快速{
+   background:#3d84ff;
+}
+
+.新快速{
+   background:#ff8a00;
+}
+
+.区間快速{
+   background:#32d74b;
    color:black;
+}
+
+.特別快速{
+   background:#ffe100;
+   color:black;
+}
+
+.特急しらさぎ{
+   background:#ff2d2d;
+}
+
+.ホームライナー{
+   background:#ff0088;
+}
+
+.特急ひだ{
+   background:#d62828;
 }
 
 .remaining{
 
-   margin-top:10px;
+   margin-top:12px;
 
    font-size:2rem;
-
-   opacity:0.9;
 }
 
 #distanceBox{
 
    text-align:center;
 
-   font-size:2.5rem;
+   font-size:2.2rem;
 
    font-weight:bold;
 
-   margin-top:10px;
+   margin-top:8px;
 }
 
 /* ======================
@@ -140,13 +161,7 @@ body{
 ====================== */
 
 #map{
-   height:55vh;
-}
-
-/* Leaflet調整 */
-
-.leaflet-container{
-   background:#ddd;
+   height:50vh;
 }
 
 </style>
@@ -155,6 +170,8 @@ body{
 <body>
 
 <div id="top">
+
+   <!-- 次の電車 -->
 
    <div class="trainCard">
 
@@ -165,26 +182,28 @@ body{
        <div class="row">
 
            <div
-             class="time"
-             id="nextTime">
-             --
+            class="time"
+            id="nextTime">
+            --
            </div>
 
            <div
-             class="type shinkaisoku"
-             id="nextType">
-             --
+            class="type"
+            id="nextType">
+            --
            </div>
 
        </div>
 
        <div
-         class="remaining"
-         id="nextRemain">
-         --
+        class="remaining"
+        id="nextRemain">
+        --
        </div>
 
    </div>
+
+   <!-- その次 -->
 
    <div class="trainCard">
 
@@ -195,25 +214,25 @@ body{
        <div class="row">
 
            <div
-             class="time"
-             style="color:#4f8cff"
-             id="secondTime">
-             --
+            class="time"
+            style="color:#5a8cff"
+            id="secondTime">
+            --
            </div>
 
            <div
-             class="type futsu"
-             id="secondType">
-             --
+            class="type"
+            id="secondType">
+            --
            </div>
 
        </div>
 
        <div
-         class="remaining"
-         style="color:#6ea0ff"
-         id="secondRemain">
-         --
+        class="remaining"
+        style="color:#7ca6ff"
+        id="secondRemain">
+        --
        </div>
 
    </div>
@@ -242,7 +261,7 @@ const station = {
 };
 
 /* ======================
-  朝の時刻表
+  時刻表
 ====================== */
 
 const trains = [
@@ -256,7 +275,7 @@ const trains = [
 {time:"06:07",type:"新快速"},
 {time:"06:13",type:"普通"},
 {time:"06:24",type:"新快速"},
-{time:"06:30",type:"新快速"},
+{time:"06:38",type:"新快速"},
 {time:"06:44",type:"普通"},
 {time:"06:53",type:"新快速"},
 {time:"06:56",type:"ホームライナー"},
@@ -268,7 +287,101 @@ const trains = [
 {time:"07:22",type:"新快速"},
 {time:"07:27",type:"普通"},
 {time:"07:32",type:"区間快速"},
-{time:"07:37",type:"快速"}
+{time:"07:37",type:"快速"},
+{time:"07:42",type:"新快速"},
+{time:"07:47",type:"普通"},
+{time:"07:52",type:"快速"},
+{time:"07:56",type:"ホームライナー"},
+
+{time:"08:01",type:"新快速"},
+{time:"08:13",type:"快速"},
+{time:"08:18",type:"特別快速"},
+{time:"08:31",type:"快速"},
+{time:"08:40",type:"新快速"},
+{time:"08:56",type:"快速"},
+
+{time:"09:11",type:"新快速"},
+{time:"09:26",type:"快速"},
+{time:"09:41",type:"新快速"},
+{time:"09:46",type:"特急ひだ"},
+{time:"09:56",type:"快速"},
+
+{time:"10:11",type:"新快速"},
+{time:"10:16",type:"特急しらさぎ"},
+{time:"10:26",type:"快速"},
+{time:"10:41",type:"新快速"},
+{time:"10:56",type:"快速"},
+
+{time:"11:11",type:"新快速"},
+{time:"11:26",type:"快速"},
+{time:"11:41",type:"新快速"},
+{time:"11:56",type:"快速"},
+
+{time:"12:11",type:"新快速"},
+{time:"12:17",type:"特急しらさぎ"},
+{time:"12:26",type:"快速"},
+{time:"12:41",type:"新快速"},
+{time:"12:56",type:"快速"},
+
+{time:"13:11",type:"新快速"},
+{time:"13:26",type:"快速"},
+{time:"13:41",type:"新快速"},
+{time:"13:56",type:"快速"},
+
+{time:"14:11",type:"新快速"},
+{time:"14:17",type:"特急しらさぎ"},
+{time:"14:26",type:"快速"},
+{time:"14:41",type:"新快速"},
+{time:"14:56",type:"快速"},
+
+{time:"15:11",type:"特別快速"},
+{time:"15:26",type:"新快速"},
+{time:"15:41",type:"特別快速"},
+{time:"15:56",type:"新快速"},
+
+{time:"16:10",type:"特別快速"},
+{time:"16:17",type:"特急しらさぎ"},
+{time:"16:26",type:"新快速"},
+{time:"16:41",type:"新快速"},
+{time:"16:56",type:"新快速"},
+
+{time:"17:10",type:"特別快速"},
+{time:"17:17",type:"特急しらさぎ"},
+{time:"17:23",type:"新快速"},
+{time:"17:34",type:"新快速"},
+{time:"17:44",type:"特別快速"},
+{time:"17:59",type:"新快速"},
+
+{time:"18:12",type:"特別快速"},
+{time:"18:23",type:"新快速"},
+{time:"18:34",type:"新快速"},
+{time:"18:44",type:"特別快速"},
+{time:"18:53",type:"新快速"},
+
+{time:"19:08",type:"新快速"},
+{time:"19:15",type:"特急しらさぎ"},
+{time:"19:23",type:"特別快速"},
+{time:"19:38",type:"新快速"},
+{time:"19:53",type:"特別快速"},
+
+{time:"20:08",type:"新快速"},
+{time:"20:23",type:"特別快速"},
+{time:"20:38",type:"新快速"},
+{time:"20:53",type:"特別快速"},
+
+{time:"21:08",type:"新快速"},
+{time:"21:20",type:"特急しらさぎ"},
+{time:"21:23",type:"特別快速"},
+{time:"21:38",type:"快速"},
+{time:"21:53",type:"新快速"},
+
+{time:"22:08",type:"快速"},
+{time:"22:23",type:"新快速"},
+{time:"22:48",type:"快速"},
+{time:"22:58",type:"快速"},
+
+{time:"23:17",type:"快速"},
+{time:"23:36",type:"普通"}
 
 ];
 
@@ -290,7 +403,7 @@ L.tileLayer(
 }
 ).addTo(map);
 
-/* 駅 */
+/* 駅マーカー */
 
 L.marker([
 station.lat,
@@ -299,7 +412,7 @@ station.lng
 .addTo(map)
 .bindPopup("大垣駅");
 
-/* ユーザー */
+/* 現在地 */
 
 let userMarker;
 
@@ -353,7 +466,7 @@ return Math.round(R*c);
 }
 
 /* ======================
-  時刻更新
+  電車更新
 ====================== */
 
 function updateTrains(){
@@ -374,84 +487,104 @@ for(let train of trains){
   trainDate.setMinutes(m);
   trainDate.setSeconds(0);
 
-  if(trainDate > now){
+  /* 翌日対応 */
 
-    const diffSec =
-    Math.floor(
-     (trainDate-now)/1000
+  if(trainDate < now){
+
+    trainDate.setDate(
+     trainDate.getDate()+1
     );
-
-    upcoming.push({
-
-      ...train,
-
-      diffSec
-
-    });
   }
-}
 
-if(upcoming.length >= 1){
-
-  const t = upcoming[0];
-
-  const min =
+  const diffSec =
   Math.floor(
-   t.diffSec/60
+   (trainDate-now)/1000
   );
 
-  const sec =
-  t.diffSec % 60;
+  upcoming.push({
 
-  document
-  .getElementById(
-   "nextTime"
-  ).innerText =
-  t.time;
+     ...train,
 
-  document
-  .getElementById(
-   "nextType"
-  ).innerText =
-  t.type;
+     diffSec
 
-  document
-  .getElementById(
-   "nextRemain"
-  ).innerText =
-  `あと ${min}分${sec}秒`;
+  });
+
 }
 
-if(upcoming.length >= 2){
+upcoming.sort(
+  (a,b)=>
+  a.diffSec-b.diffSec
+);
 
-  const t = upcoming[1];
+/* 次 */
 
-  const min =
-  Math.floor(
-   t.diffSec/60
-  );
+const next = upcoming[0];
 
-  const sec =
-  t.diffSec % 60;
+const nextMin =
+Math.floor(
+ next.diffSec/60
+);
 
-  document
-  .getElementById(
-   "secondTime"
-  ).innerText =
-  t.time;
+const nextSec =
+next.diffSec%60;
 
-  document
-  .getElementById(
-   "secondType"
-  ).innerText =
-  t.type;
+document
+.getElementById(
+ "nextTime"
+).innerText =
+next.time;
 
-  document
-  .getElementById(
-   "secondRemain"
-  ).innerText =
-  `あと ${min}分${sec}秒`;
-}
+const nextType =
+document.getElementById(
+ "nextType"
+);
+
+nextType.innerText =
+next.type;
+
+nextType.className =
+"type " + next.type;
+
+document
+.getElementById(
+ "nextRemain"
+).innerText =
+`あと ${nextMin}分 ${nextSec}秒`;
+
+/* その次 */
+
+const second = upcoming[1];
+
+const secondMin =
+Math.floor(
+ second.diffSec/60
+);
+
+const secondSec =
+second.diffSec%60;
+
+document
+.getElementById(
+ "secondTime"
+).innerText =
+second.time;
+
+const secondType =
+document.getElementById(
+ "secondType"
+);
+
+secondType.innerText =
+second.type;
+
+secondType.className =
+"type " + second.type;
+
+document
+.getElementById(
+ "secondRemain"
+).innerText =
+`あと ${secondMin}分 ${secondSec}秒`;
 
 }
 
@@ -470,8 +603,6 @@ position => {
   const lng =
   position.coords.longitude;
 
-  /* マーカー */
-
   if(userMarker){
 
     map.removeLayer(
@@ -484,14 +615,10 @@ position => {
   .addTo(map)
   .bindPopup("現在地");
 
-  /* 中心移動 */
-
   map.setView(
    [lat,lng],
    16
   );
-
-  /* 距離 */
 
   const dist =
   calcDistance(
