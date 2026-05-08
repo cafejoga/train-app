@@ -7,161 +7,194 @@ content="width=device-width, initial-scale=1.0">
 
 <title>大垣駅 トレインナビ</title>
 
-<link
-rel="stylesheet"
-href="https://unpkg.com/leaflet/dist/leaflet.css"
-/>
-
-<script
-src="https://unpkg.com/leaflet/dist/leaflet.js">
-</script>
-
 <style>
 
 body{
-   margin:0;
-   background:#0f0f12;
-   color:white;
-   font-family:
-   -apple-system,
-   BlinkMacSystemFont,
-   sans-serif;
+    margin:0;
+    background:#0f0f12;
+    color:white;
+    font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
 }
 
 /* ======================
-  上エリア
+   全体
 ====================== */
 
 #top{
 
-   min-height:45vh;
+    min-height:100vh;
 
-   padding:18px;
+    padding:18px;
 
-   box-sizing:border-box;
+    box-sizing:border-box;
 
-   background:
-   linear-gradient(
-     to bottom,
-     #1a1a22,
-     #0e0e12
-   );
+    background:
+    linear-gradient(
+      to bottom,
+      #1a1a22,
+      #0e0e12
+    );
 }
+
+/* ======================
+   カード
+====================== */
 
 .trainCard{
 
-   background:#17171f;
+    background:#17171f;
 
-   border-radius:24px;
+    border-radius:24px;
 
-   padding:20px;
+    padding:20px;
 
-   margin-bottom:18px;
+    margin-bottom:18px;
 
-   box-shadow:
-   0 8px 24px
-   rgba(0,0,0,0.35);
+    box-shadow:
+    0 8px 24px
+    rgba(0,0,0,0.35);
 }
 
 .label{
 
-   font-size:1.2rem;
+    font-size:1.2rem;
 
-   opacity:0.8;
+    opacity:0.8;
 
-   margin-bottom:12px;
+    margin-bottom:12px;
 }
 
 .row{
 
-   display:flex;
+    display:flex;
 
-   justify-content:space-between;
+    justify-content:space-between;
 
-   align-items:center;
+    align-items:center;
 }
 
 .time{
 
-   font-size:4.2rem;
+    font-size:4.2rem;
 
-   font-weight:700;
+    font-weight:700;
 
-   line-height:1;
+    line-height:1;
 }
 
 .type{
 
-   font-size:1.3rem;
+    font-size:1.3rem;
 
-   padding:8px 14px;
+    padding:8px 14px;
 
-   border-radius:16px;
+    border-radius:16px;
 
-   font-weight:bold;
-}
-
-/* 種別色 */
-
-.普通{
-   background:#ddd;
-   color:black;
-}
-
-.快速{
-   background:#3d84ff;
-}
-
-.新快速{
-   background:#ff8a00;
-}
-
-.区間快速{
-   background:#32d74b;
-   color:black;
-}
-
-.特別快速{
-   background:#ffe100;
-   color:black;
-}
-
-.特急しらさぎ{
-   background:#ff2d2d;
-}
-
-.ホームライナー{
-   background:#ff0088;
-}
-
-.特急ひだ{
-   background:#d62828;
-}
-
-.remaining{
-
-   margin-top:12px;
-
-   font-size:2rem;
-}
-
-#distanceBox{
-
-   text-align:center;
-
-   font-size:2.2rem;
-
-   font-weight:bold;
-
-   margin-top:8px;
+    font-weight:bold;
 }
 
 /* ======================
-  地図
+   種別色
 ====================== */
 
-#map{
-   height:50vh;
+.普通{
+    background:#ddd;
+    color:black;
+}
+
+.快速{
+    background:#3d84ff;
+}
+
+.新快速{
+    background:#ff8a00;
+}
+
+.区間快速{
+    background:#32d74b;
+    color:black;
+}
+
+.特別快速{
+    background:#ffe100;
+    color:black;
+}
+
+.特急しらさぎ{
+    background:#ff2d2d;
+}
+
+.ホームライナー{
+    background:#ff0088;
+}
+
+.特急ひだ{
+    background:#d62828;
+}
+
+/* ======================
+   残り時間
+====================== */
+
+.remaining{
+
+    margin-top:12px;
+
+    font-size:2rem;
+}
+
+/* ======================
+   距離
+====================== */
+
+#distanceBox{
+
+    text-align:center;
+
+    font-size:2.3rem;
+
+    font-weight:bold;
+
+    margin-top:20px;
+}
+
+/* ======================
+   徒歩時間
+====================== */
+
+#walkTime{
+
+    text-align:center;
+
+    font-size:2rem;
+
+    margin-top:12px;
+
+    color:#7ee787;
+}
+
+/* ======================
+   判定
+====================== */
+
+#judgeBox{
+
+    margin-top:18px;
+
+    text-align:center;
+
+    font-size:2.5rem;
+
+    font-weight:bold;
+
+    padding:18px;
+
+    border-radius:20px;
+
+    transition:0.3s;
 }
 
 </style>
@@ -171,97 +204,109 @@ body{
 
 <div id="top">
 
-   <!-- 次の電車 -->
+    <!-- 次の電車 -->
 
-   <div class="trainCard">
+    <div class="trainCard">
 
-       <div class="label">
-           次の電車
-       </div>
+        <div class="label">
+            次の電車
+        </div>
 
-       <div class="row">
+        <div class="row">
 
-           <div
-            class="time"
-            id="nextTime">
-            --
-           </div>
+            <div
+             class="time"
+             id="nextTime">
+             --
+            </div>
 
-           <div
-            class="type"
-            id="nextType">
-            --
-           </div>
+            <div
+             class="type"
+             id="nextType">
+             --
+            </div>
 
-       </div>
+        </div>
 
-       <div
-        class="remaining"
-        id="nextRemain">
-        --
-       </div>
+        <div
+         class="remaining"
+         id="nextRemain">
+         --
+        </div>
 
-   </div>
+    </div>
 
-   <!-- その次 -->
+    <!-- その次 -->
 
-   <div class="trainCard">
+    <div class="trainCard">
 
-       <div class="label">
-           その次
-       </div>
+        <div class="label">
+            その次
+        </div>
 
-       <div class="row">
+        <div class="row">
 
-           <div
-            class="time"
-            style="color:#5a8cff"
-            id="secondTime">
-            --
-           </div>
+            <div
+             class="time"
+             style="color:#5a8cff"
+             id="secondTime">
+             --
+            </div>
 
-           <div
-            class="type"
-            id="secondType">
-            --
-           </div>
+            <div
+             class="type"
+             id="secondType">
+             --
+            </div>
 
-       </div>
+        </div>
 
-       <div
-        class="remaining"
-        style="color:#7ca6ff"
-        id="secondRemain">
-        --
-       </div>
+        <div
+         class="remaining"
+         style="color:#7ca6ff"
+         id="secondRemain">
+         --
+        </div>
 
-   </div>
+    </div>
 
-   <div id="distanceBox">
-       駅まで --m
-   </div>
+    <!-- 距離 -->
+
+    <div id="distanceBox">
+        駅まで --m
+    </div>
+
+    <!-- 徒歩 -->
+
+    <div id="walkTime">
+        徒歩 --
+    </div>
+
+    <!-- 判定 -->
+
+    <div id="judgeBox">
+        判定中...
+    </div>
 
 </div>
-
-<div id="map"></div>
 
 <script>
 
 /* ======================
-  大垣駅
+   大垣駅
 ====================== */
 
 const station = {
 
-   name:"大垣駅",
+    name:"大垣駅",
 
-   lat:35.367149,
+    lat:35.367149,
 
-   lng:136.617332
+    lng:136.617332
 };
 
 /* ======================
-  時刻表
+   時刻表
 ====================== */
 
 const trains = [
@@ -386,279 +431,301 @@ const trains = [
 ];
 
 /* ======================
-  地図
+   次の電車
 ====================== */
-
-const map = L.map('map')
-.setView(
-[station.lat, station.lng],
-15
-);
-
-L.tileLayer(
-'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-{
-  attribution:
-  '&copy; OpenStreetMap'
-}
-).addTo(map);
-
-/* 駅マーカー */
-
-L.marker([
-station.lat,
-station.lng
-])
-.addTo(map)
-.bindPopup("大垣駅");
-
-/* 現在地 */
-
-let userMarker;
-
-/* ======================
-  距離計算
-====================== */
-
-function calcDistance(
-lat1,
-lon1,
-lat2,
-lon2
-){
-
-const R = 6371000;
-
-const toRad =
-deg => deg * Math.PI/180;
-
-const dLat =
-toRad(lat2-lat1);
-
-const dLon =
-toRad(lon2-lon1);
-
-const a =
-
-Math.sin(dLat/2)
-*
-Math.sin(dLat/2)
-
-+
-
-Math.cos(toRad(lat1))
-*
-Math.cos(toRad(lat2))
-
-*
-Math.sin(dLon/2)
-*
-Math.sin(dLon/2);
-
-const c =
-2 *
-Math.atan2(
- Math.sqrt(a),
- Math.sqrt(1-a)
-);
-
-return Math.round(R*c);
-}
-
-/* ======================
-  電車更新
-====================== */
-
-function updateTrains(){
-
-const now = new Date();
 
 let upcoming = [];
 
-for(let train of trains){
+function updateTrains(){
 
-  const [h,m] =
-  train.time.split(":");
+ const now = new Date();
 
-  const trainDate =
-  new Date();
+ upcoming = [];
 
-  trainDate.setHours(h);
-  trainDate.setMinutes(m);
-  trainDate.setSeconds(0);
+ for(let train of trains){
 
-  /* 翌日対応 */
+   const [h,m] =
+   train.time.split(":");
 
-  if(trainDate < now){
+   const trainDate =
+   new Date();
 
-    trainDate.setDate(
-     trainDate.getDate()+1
-    );
-  }
+   trainDate.setHours(h);
+   trainDate.setMinutes(m);
+   trainDate.setSeconds(0);
 
-  const diffSec =
-  Math.floor(
-   (trainDate-now)/1000
-  );
+   /* 翌日対応 */
 
-  upcoming.push({
+   if(trainDate < now){
 
-     ...train,
+     trainDate.setDate(
+      trainDate.getDate()+1
+     );
+   }
 
-     diffSec
+   const diffSec =
+   Math.floor(
+    (trainDate-now)/1000
+   );
 
-  });
+   upcoming.push({
 
-}
+      ...train,
 
-upcoming.sort(
-  (a,b)=>
-  a.diffSec-b.diffSec
-);
+      diffSec
 
-/* 次 */
+   });
 
-const next = upcoming[0];
+ }
 
-const nextMin =
-Math.floor(
- next.diffSec/60
-);
+ upcoming.sort(
+   (a,b)=>
+   a.diffSec-b.diffSec
+ );
 
-const nextSec =
-next.diffSec%60;
+ /* 次 */
 
-document
-.getElementById(
- "nextTime"
-).innerText =
-next.time;
+ const next = upcoming[0];
 
-const nextType =
-document.getElementById(
- "nextType"
-);
+ const nextMin =
+ Math.floor(
+  next.diffSec/60
+ );
 
-nextType.innerText =
-next.type;
+ const nextSec =
+ next.diffSec%60;
 
-nextType.className =
-"type " + next.type;
+ document
+ .getElementById(
+  "nextTime"
+ ).innerText =
+ next.time;
 
-document
-.getElementById(
- "nextRemain"
-).innerText =
-`あと ${nextMin}分 ${nextSec}秒`;
+ const nextType =
+ document.getElementById(
+  "nextType"
+ );
 
-/* その次 */
+ nextType.innerText =
+ next.type;
 
-const second = upcoming[1];
+ nextType.className =
+ "type " + next.type;
 
-const secondMin =
-Math.floor(
- second.diffSec/60
-);
+ document
+ .getElementById(
+  "nextRemain"
+ ).innerText =
+ `あと ${nextMin}分 ${nextSec}秒`;
 
-const secondSec =
-second.diffSec%60;
+ /* その次 */
 
-document
-.getElementById(
- "secondTime"
-).innerText =
-second.time;
+ const second = upcoming[1];
 
-const secondType =
-document.getElementById(
- "secondType"
-);
+ const secondMin =
+ Math.floor(
+  second.diffSec/60
+ );
 
-secondType.innerText =
-second.type;
+ const secondSec =
+ second.diffSec%60;
 
-secondType.className =
-"type " + second.type;
+ document
+ .getElementById(
+  "secondTime"
+ ).innerText =
+ second.time;
 
-document
-.getElementById(
- "secondRemain"
-).innerText =
-`あと ${secondMin}分 ${secondSec}秒`;
+ const secondType =
+ document.getElementById(
+  "secondType"
+ );
+
+ secondType.innerText =
+ second.type;
+
+ secondType.className =
+ "type " + second.type;
+
+ document
+ .getElementById(
+  "secondRemain"
+ ).innerText =
+ `あと ${secondMin}分 ${secondSec}秒`;
 
 }
 
 /* ======================
-  GPS
+   GPS
 ====================== */
 
 navigator.geolocation
 .watchPosition(
 
-position => {
+ position => {
 
-  const lat =
-  position.coords.latitude;
+   const lat =
+   position.coords.latitude;
 
-  const lng =
-  position.coords.longitude;
+   const lng =
+   position.coords.longitude;
 
-  if(userMarker){
+   const dist =
+   calcDistance(
+    lat,
+    lng,
+    station.lat,
+    station.lng
+   );
 
-    map.removeLayer(
-     userMarker
-    );
-  }
+   document
+   .getElementById(
+    "distanceBox"
+   ).innerText =
+   `駅まで ${dist}m`;
 
-  userMarker =
-  L.marker([lat,lng])
-  .addTo(map)
-  .bindPopup("現在地");
+   /* 徒歩時間 */
 
-  map.setView(
-   [lat,lng],
-   16
-  );
+   const walkSec =
+   Math.floor(
+    dist / 80 * 60
+   );
 
-  const dist =
-  calcDistance(
-   lat,
-   lng,
-   station.lat,
-   station.lng
-  );
+   const walkMin =
+   Math.floor(
+    walkSec / 60
+   );
 
-  document
-  .getElementById(
-   "distanceBox"
-  ).innerText =
-  `駅まで ${dist}m`;
+   const remainSec =
+   walkSec % 60;
 
-},
+   document
+   .getElementById(
+    "walkTime"
+   ).innerText =
 
-error => {
+   `徒歩 約${walkMin}分${remainSec}秒`;
 
-  alert(
-   "GPSを許可してください"
-  );
+   /* 判定 */
 
-},
+   const nextTrainSec =
+   upcoming[0].diffSec;
 
-{
-  enableHighAccuracy:true
-}
+   const judge =
+   document.getElementById(
+    "judgeBox"
+   );
+
+   const margin =
+   nextTrainSec - walkSec;
+
+   /* 緑 */
+
+   if(margin > 180){
+
+     judge.innerText =
+     "🟢 間に合う";
+
+     judge.style.background =
+     "#1f6f3c";
+   }
+
+   /* 黄 */
+
+   else if(margin > 0){
+
+     judge.innerText =
+     "🟡 ギリギリ";
+
+     judge.style.background =
+     "#9a7b00";
+   }
+
+   /* 赤 */
+
+   else{
+
+     judge.innerText =
+     "🔴 間に合わない";
+
+     judge.style.background =
+     "#8b1e1e";
+   }
+
+ },
+
+ error => {
+
+   alert(
+    "GPSを許可してください"
+   );
+
+ },
+
+ {
+   enableHighAccuracy:true
+ }
 
 );
 
 /* ======================
-  起動
+   距離計算
+====================== */
+
+function calcDistance(
+ lat1,
+ lon1,
+ lat2,
+ lon2
+){
+
+ const R = 6371000;
+
+ const toRad =
+ deg => deg * Math.PI/180;
+
+ const dLat =
+ toRad(lat2-lat1);
+
+ const dLon =
+ toRad(lon2-lon1);
+
+ const a =
+
+ Math.sin(dLat/2)
+ *
+ Math.sin(dLat/2)
+
+ +
+
+ Math.cos(toRad(lat1))
+ *
+ Math.cos(toRad(lat2))
+
+ *
+ Math.sin(dLon/2)
+ *
+ Math.sin(dLon/2);
+
+ const c =
+ 2 *
+ Math.atan2(
+  Math.sqrt(a),
+  Math.sqrt(1-a)
+ );
+
+ return Math.round(R*c);
+}
+
+/* ======================
+   起動
 ====================== */
 
 updateTrains();
 
 setInterval(
-updateTrains,
-1000
+ updateTrains,
+ 1000
 );
 
 </script>
