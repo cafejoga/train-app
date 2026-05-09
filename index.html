@@ -156,6 +156,9 @@ body{
 </div>
 
 <script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
+}
 
 /* 駅 */
 const ogakiStation = {name:"大垣駅",lat:35.367149,lng:136.617332};
