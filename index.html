@@ -10,13 +10,24 @@ content="width=device-width, initial-scale=1.0">
 <style>
 
 body{
+
     margin:0;
+
     color:white;
 
     font-family:
     -apple-system,
     BlinkMacSystemFont,
     sans-serif;
+
+    transition:0.4s;
+}
+
+/* ======================
+   朝背景
+====================== */
+
+.morningTheme{
 
     background:
     linear-gradient(
@@ -25,6 +36,24 @@ body{
       #6b3a12
     );
 }
+
+/* ======================
+   夜背景
+====================== */
+
+.homeTheme{
+
+    background:
+    linear-gradient(
+      to bottom,
+      #102040,
+      #061326
+    );
+}
+
+/* ======================
+   全体
+====================== */
 
 #top{
 
@@ -35,22 +64,16 @@ body{
     box-sizing:border-box;
 }
 
-#modeBox{
-
-    text-align:center;
-
-    font-size:1.2rem;
-
-    margin-bottom:16px;
-
-    color:#ffe3c4;
-
-    font-weight:bold;
-}
+/* ======================
+   カード
+====================== */
 
 .trainCard{
 
-    background:#5a2f00;
+    background:
+    rgba(255,255,255,0.12);
+
+    backdrop-filter:blur(8px);
 
     border-radius:24px;
 
@@ -103,7 +126,9 @@ body{
     font-weight:bold;
 }
 
-/* 種別 */
+/* ======================
+   種別カラー
+====================== */
 
 .普通{
     background:#ddd;
@@ -128,6 +153,10 @@ body{
     color:black;
 }
 
+/* ======================
+   残り時間
+====================== */
+
 .remaining{
 
     margin-top:14px;
@@ -136,6 +165,10 @@ body{
 
     font-size:2rem;
 }
+
+/* ======================
+   距離
+====================== */
 
 #distanceBox{
 
@@ -148,6 +181,10 @@ body{
     margin-top:22px;
 }
 
+/* ======================
+   移動時間
+====================== */
+
 #moveTime{
 
     text-align:center;
@@ -158,6 +195,10 @@ body{
 
     color:#fff7d6;
 }
+
+/* ======================
+   判定
+====================== */
 
 #judgeBox{
 
@@ -178,15 +219,19 @@ body{
     cursor:pointer;
 }
 
+/* ======================
+   タップ説明
+====================== */
+
 #tapInfo{
 
     text-align:center;
 
     margin-top:10px;
 
-    color:#ffe3c4;
+    opacity:0.7;
 
-    opacity:0.8;
+    font-size:0.95rem;
 }
 
 </style>
@@ -195,10 +240,6 @@ body{
 <body>
 
 <div id="top">
-
-    <div id="modeBox">
-        判定中...
-    </div>
 
     <!-- 次の電車 -->
 
@@ -272,10 +313,10 @@ body{
         駅まで --m
     </div>
 
-    <!-- 移動 -->
+    <!-- 移動時間 -->
 
     <div id="moveTime">
-        🚲 --
+        --
     </div>
 
     <!-- 判定 -->
@@ -284,8 +325,10 @@ body{
         判定中...
     </div>
 
+    <!-- タップ説明 -->
+
     <div id="tapInfo">
-        ↓ タップで朝/帰宅モード切替
+        ↓ タップで朝 / 帰宅モード切替
     </div>
 
 </div>
@@ -315,7 +358,7 @@ const nishiStation = {
 };
 
 /* ======================
-   大垣駅（完全版）
+   大垣駅（徒歩）
 ====================== */
 
 const ogakiTrains = [
@@ -374,47 +417,12 @@ const ogakiTrains = [
 {time:"14:12",type:"新快速"},
 {time:"14:28",type:"快速"},
 {time:"14:42",type:"新快速"},
-{time:"14:58",type:"快速"},
-
-{time:"15:12",type:"新快速"},
-{time:"15:28",type:"快速"},
-{time:"15:42",type:"新快速"},
-{time:"15:58",type:"快速"},
-
-{time:"16:12",type:"新快速"},
-{time:"16:28",type:"快速"},
-{time:"16:42",type:"新快速"},
-{time:"16:58",type:"快速"},
-
-{time:"17:12",type:"新快速"},
-{time:"17:28",type:"快速"},
-{time:"17:42",type:"新快速"},
-{time:"17:58",type:"快速"},
-
-{time:"18:12",type:"新快速"},
-{time:"18:28",type:"快速"},
-{time:"18:42",type:"新快速"},
-{time:"18:58",type:"快速"},
-
-{time:"19:12",type:"新快速"},
-{time:"19:28",type:"快速"},
-{time:"19:42",type:"新快速"},
-{time:"19:58",type:"快速"},
-
-{time:"20:12",type:"新快速"},
-{time:"20:28",type:"快速"},
-{time:"20:42",type:"新快速"},
-{time:"20:58",type:"快速"},
-
-{time:"21:12",type:"新快速"},
-{time:"21:28",type:"快速"},
-{time:"21:42",type:"新快速"},
-{time:"21:58",type:"快速"}
+{time:"14:58",type:"快速"}
 
 ];
 
 /* ======================
-   西岐阜駅（完全版）
+   西岐阜駅（自転車）
 ====================== */
 
 const nishiGifuTrains = [
@@ -506,6 +514,8 @@ const now = new Date();
 
 const hour = now.getHours();
 
+/* 初期表示 */
+
 if(hour < 13){
 
     mode = "morning";
@@ -524,19 +534,19 @@ let trains;
 
 function setupMode(){
 
+    /* 朝 */
+
     if(mode === "morning"){
 
         station = ogakiStation;
 
         trains = ogakiTrains;
 
-        document
-        .getElementById(
-          "modeBox"
-        ).innerText =
-
-        "☀️ 朝モード";
+        document.body.className =
+        "morningTheme";
     }
+
+    /* 帰宅 */
 
     else{
 
@@ -544,12 +554,8 @@ function setupMode(){
 
         trains = nishiGifuTrains;
 
-        document
-        .getElementById(
-          "modeBox"
-        ).innerText =
-
-        "🌙 帰宅モード";
+        document.body.className =
+        "homeTheme";
     }
 
     updateTrains();
@@ -578,7 +584,7 @@ document
 };
 
 /* ======================
-   電車
+   電車更新
 ====================== */
 
 let upcoming = [];
@@ -727,20 +733,25 @@ navigator.geolocation
 
    `${station.name}まで ${realDist}m`;
 
-   /* 徒歩 or 自転車 */
+   /* ======================
+      朝＝徒歩
+      夜＝自転車
+   ====================== */
 
    let speed;
    let icon;
 
-   if(realDist <= 300){
+   if(mode === "morning"){
 
-      speed = 85;
+      speed = 75;
+
       icon = "🚶";
    }
 
    else{
 
       speed = 220;
+
       icon = "🚲";
    }
 
@@ -777,6 +788,8 @@ navigator.geolocation
     "judgeBox"
    );
 
+   /* 緑 */
+
    if(margin > 180){
 
       judge.innerText =
@@ -786,6 +799,8 @@ navigator.geolocation
       "#1f6f3c";
    }
 
+   /* 黄 */
+
    else if(margin > 0){
 
       judge.innerText =
@@ -794,6 +809,8 @@ navigator.geolocation
       judge.style.background =
       "#9a7b00";
    }
+
+   /* 赤 */
 
    else{
 
@@ -821,7 +838,7 @@ navigator.geolocation
 );
 
 /* ======================
-   距離
+   距離計算
 ====================== */
 
 function calcDistance(
