@@ -299,16 +299,17 @@ navigator.geolocation.watchPosition(pos => {
  document.getElementById("distanceBox").innerText =
  `${station.name}まで ${realDist}m`;
 
- /* デフォルト */
- let speed = 220;
- let icon = "🚲";
+let speed;
+let icon;
 
- /* 要件② */
- if(station === nishiStation && realDist <= 300){
+if(realDist >= 1000){
+    speed = 220;
+    icon = "🚲";
+}
+else{
     speed = 75;
     icon = "🚶";
- }
-
+}
  const moveSec = Math.floor(realDist / speed * 60);
 
  document.getElementById("moveTime").innerText =
