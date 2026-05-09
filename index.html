@@ -301,15 +301,12 @@ function updateTrains(){
  const next = upcoming[0];
  const second = upcoming[1];
 
- document.getElementById("nextTime").innerText = next.time;
+ /* ★色付け修正ここ */
  document.getElementById("nextType").innerText = next.type;
- document.getElementById("nextRemain").innerText =
- `あと ${Math.floor(next.diffSec/60)}分 ${next.diffSec%60}秒`;
+ document.getElementById("nextType").className = "type " + typeMap[next.type];
 
- document.getElementById("secondTime").innerText = second.time;
  document.getElementById("secondType").innerText = second.type;
- document.getElementById("secondRemain").innerText =
- `あと ${Math.floor(second.diffSec/60)}分 ${second.diffSec%60}秒`;
+ document.getElementById("secondType").className = "type " + typeMap[second.type];
 }
 
 /* GPS */
