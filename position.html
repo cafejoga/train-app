@@ -35,7 +35,7 @@ html, body {
 /* iframe 自体を巨大にして、中身を強制的に全展開する */
 .frame-container iframe {
     width: 100%;
-    height: 3000px; /* ★JR東海のページがすっぽり収まるくらいの高さを指定 */
+    height: 23000px; /* ★JR東海のページがすっぽり収まるくらいの高さを指定 */
     border: none;
     pointer-events: none; /* iframe内のスクロールを無効化し、親のスクロールを優先 */
 }
@@ -55,7 +55,7 @@ html, body {
 <body>
 
 <div class="header">
-🚃 JR東海 運行情報 テスト2
+🚃 JR東海 運行情報 テスト3
 </div>
 
 <div id="debug">読込中...</div>
@@ -78,7 +78,7 @@ window.onload = function() {
     setTimeout(() => {
         // ★ 1秒後に、外枠のスクロール位置を「運行情報がちょうど見える位置」まで飛ばす
         // 18000は大きすぎる可能性があるので、まずは 300〜800 辺りで微調整してみてください
-        container.scrollTop = 10500; 
+        container.scrollTop = 15500; 
     }, 1000);
 };
 </script>
