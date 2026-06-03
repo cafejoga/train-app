@@ -1,18 +1,17 @@
 <!DOCTYPE html>
+
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>JR東海 運行情報</title>
+<title>スクロールテスト</title>
 
 <style>
 html, body {
     margin: 0;
     padding: 0;
-    width: 100%;
     height: 100%;
-    overflow: hidden;
 }
 
 .header {
@@ -34,28 +33,77 @@ html, body {
 }
 
 .frame-container iframe {
-    width: 115%;
-    height: 115%;
+    width: 200vw;
+    height: 200dvh;
     border: none;
 }
+
+#debug {
+    position: fixed;
+    top: 60px;
+    right: 5px;
+    z-index: 9999;
+    background: white;
+    border: 1px solid #999;
+    padding: 8px;
+    font-size: 14px;
+}
 </style>
+
 </head>
 
 <body>
 
 <div class="header">
-🚃 JR東海 運行情報
+🚃 JR東海 運行情報 テスト
+</div>
+
+<div id="debug">
+読込中...
 </div>
 
 <div class="frame-container">
-    <iframe
+    <iframe id="jrframe"
         src="https://traininfo.jr-central.co.jp/zairaisen/status_detail.html?line=10001&lang=ja">
     </iframe>
 </div>
+
 <script>
+
+const container = document.querySelector('.frame-container');
+const debug = document.getElementById('debug');
+
+container.addEventListener('scroll', () => {
+    debug.innerHTML =
+        "scrollTop = " + Math.round(container.scrollTop) +
+        "<br>max = " +
+        (container.scrollHeight - container.clientHeight);
+});
+
 window.onload = function() {
-    document.querySelector('.frame-container').scrollTop = 200;
+
+    setTimeout(() => {
+
+        container.scrollTop = 5600;
+
+        debug.innerHTML =
+            "設定値 = 5600<br>" +
+            "実際 = " + Math.round(container.scrollTop) +
+            "<br>max = " +
+            (container.scrollHeight - container.clientHeight);
+
+        alert(
+            "設定値: 5600\n" +
+            "実際のscrollTop: " +
+            Math.round(container.scrollTop) +
+            "\n最大値: " +
+            (container.scrollHeight - container.clientHeight)
+        );
+
+    }, 3000);
+
 };
 </script>
+
 </body>
 </html>
