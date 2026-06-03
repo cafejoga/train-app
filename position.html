@@ -1,17 +1,57 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>運行情報テスト</title>
-<h2>JR東海運行情報</h2>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<iframe
-  src="https://traininfo.jr-central.co.jp/zairaisen/status_detail.html?line=10001&lang=ja"
-  style="
-    width:100vw;
-    height:100vh;
-    border:1px;">
-</iframe>
+<title>JR東海 運行情報</title>
+
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.header {
+    height: 50px;
+    background: #0066cc;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.frame-container {
+    width: 100vw;
+    height: calc(100dvh - 50px);
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.frame-container iframe {
+    width: 200vw;
+    height: 200dvh;
+    border: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+🚃 JR東海 運行情報
+</div>
+
+<div class="frame-container">
+    <iframe
+        src="https://traininfo.jr-central.co.jp/zairaisen/status_detail.html?line=10001&lang=ja">
+    </iframe>
+</div>
 
 </body>
 </html>
