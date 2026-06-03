@@ -79,29 +79,10 @@ container.addEventListener('scroll', () => {
         "<br>max = " +
         (container.scrollHeight - container.clientHeight);
 });
-
 window.onload = function() {
-
     setTimeout(() => {
-
-        container.scrollTop = 5600;
-
-        debug.innerHTML =
-            "設定値 = 5600<br>" +
-            "実際 = " + Math.round(container.scrollTop) +
-            "<br>max = " +
-            (container.scrollHeight - container.clientHeight);
-
-        alert(
-            "設定値: 5600\n" +
-            "実際のscrollTop: " +
-            Math.round(container.scrollTop) +
-            "\n最大値: " +
-            (container.scrollHeight - container.clientHeight)
-        );
-
-    }, 3000);
-
+        document.querySelector('.frame-container').scrollTop = 18000;
+    }, 1000);
 };
 </script>
 
