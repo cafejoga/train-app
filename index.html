@@ -2,8 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#000000">
 <title>🚃トレインナビ ver1.10</title>
@@ -68,6 +67,10 @@ body{
     padding:8px 14px;
     border-radius:16px;
     font-weight:bold;
+    /* ★追加：リンク化した際のデフォルトの装飾（下線や紫化など）を完全に打ち消す */
+    text-decoration: none; 
+    color: white; 
+    display: inline-block;
 }
 
 /* 種別カラー（修正版） */
@@ -78,10 +81,12 @@ body{
 
 .type_rapid{
     background:#3d84ff;
+    color:white; /* 明示的に指定 */
 }
 
 .type_shinkaisoku{
     background:#ff8a00;
+    color:white; /* 明示的に指定 */
 }
 
 .type_kukan{
@@ -136,7 +141,7 @@ body{
 <div class="label">もっとも早い電車</div>
 <div class="row">
 <div class="time" id="nextTime">--</div>
-<div class="type" id="nextType">--</div>
+<a href="position.html" class="type" id="nextType">--</a>
 </div>
 <div class="remaining" id="nextRemain">--</div>
 </div>
@@ -145,7 +150,7 @@ body{
 <div class="label">その次</div>
 <div class="row">
 <div class="time" id="secondTime" style="color:#d6e7ff">--</div>
-<div class="type" id="secondType">--</div>
+<a href="position.html" class="type" id="secondType">--</a>
 </div>
 <div class="remaining" id="secondRemain" style="color:#d6e7ff">--</div>
 </div>
@@ -164,7 +169,7 @@ if ('serviceWorker' in navigator) {
 /* 駅 */
 const ogakiStation = {name:"大垣駅",lat:35.367149,lng:136.617332};
 const nishiStation = {name:"西岐阜駅",lat:35.4046698,lng:136.7234266};
-/* 種別マッピング（ここが重要） */
+/* 種別マッピング */
 const typeMap = {
   "普通":"type_local",
   "快速":"type_rapid",
@@ -196,84 +201,26 @@ const ogakiTrains = [ {time:"05:00",type:"普通"}, {time:"05:21",type:"普通"}
                      {time:"22:23",type:"新快速"}, {time:"22:48",type:"快速"}, {time:"22:58",type:"快速"}, {time:"23:17",type:"快速"},
                      {time:"23:36",type:"普通"} ];
 const nishiGifuTrains = [
-{time:"06:08",type:"普通"},
-{time:"06:40",type:"快速"},
-{time:"06:53",type:"普通"},
-{time:"07:09",type:"新快速"},
-{time:"07:23",type:"区間快速"},
-{time:"07:37",type:"快速"},
-{time:"07:49",type:"快速"},
-{time:"07:56",type:"普通"},
-{time:"08:17",type:"特別快速"},
-{time:"08:26",type:"快速"},
-{time:"08:36",type:"特別快速"},
-{time:"08:45",type:"快速"},
-{time:"08:57",type:"特別快速"},
-{time:"09:09",type:"特別快速"},
-{time:"09:30",type:"区間快速"},
-{time:"09:42",type:"特別快速"},
-{time:"09:55",type:"新快速"},
-{time:"09:59",type:"快速"},
-{time:"10:18",type:"特別快速"},
-{time:"10:23",type:"新快速"},
-{time:"10:37",type:"新快速"},
-{time:"10:52",type:"快速"},
-{time:"11:07",type:"新快速"},
-{time:"11:22",type:"快速"},
-{time:"11:37",type:"新快速"},
-{time:"11:52",type:"快速"},
-{time:"12:09",type:"新快速"},
-{time:"12:22",type:"快速"},
-{time:"12:38",type:"新快速"},
-{time:"12:52",type:"快速"},
-{time:"13:08",type:"新快速"},
-{time:"13:23",type:"快速"},
-{time:"13:38",type:"新快速"},
-{time:"13:53",type:"快速"},
-{time:"14:09",type:"新快速"},
-{time:"14:22",type:"快速"},
-{time:"14:38",type:"新快速"},
-{time:"14:52",type:"快速"},
-{time:"15:08",type:"新快速"},
-{time:"15:23",type:"快速"},
-{time:"15:38",type:"新快速"},
-{time:"15:53",type:"快速"},
-{time:"16:08",type:"新快速"},
-{time:"16:23",type:"快速"},
-{time:"16:38",type:"新快速"},
-{time:"16:53",type:"快速"},
-{time:"17:08",type:"新快速"},
-{time:"17:23",type:"快速"},
-{time:"17:38",type:"新快速"},
-{time:"17:53",type:"快速"},
-{time:"18:08",type:"新快速"},
-{time:"18:24",type:"快速"},
-{time:"18:35",type:"特別快速"},
-{time:"18:49",type:"快速"},
-{time:"18:55",type:"快速"},
-{time:"19:05",type:"特別快速"},
-{time:"19:19",type:"区間快速"},
-{time:"19:26",type:"快速"},
-{time:"19:36",type:"特別快速"},
-{time:"19:49",type:"快速"},
-{time:"19:55",type:"新快速"},
-{time:"20:06",type:"特別快速"},
-{time:"20:20",type:"快速"},
-{time:"20:25",type:"新快速"},
-{time:"20:38",type:"快速"},
-{time:"20:53",type:"新快速"},
-{time:"21:08",type:"特別快速"},
-{time:"21:23",type:"快速"},
-{time:"21:38",type:"特別快速"},
-{time:"21:53",type:"快速"},
-{time:"22:08",type:"特別快速"},
-{time:"22:23",type:"区間快速"},
-{time:"22:38",type:"新快速"},
-{time:"22:53",type:"区間快速"},
-{time:"23:13",type:"新快速"},
-{time:"23:23",type:"区間快速"},
-{time:"23:39",type:"新快速"},
-{time:"23:57",type:"快速"}
+{time:"06:08",type:"普通"}, {time:"06:40",type:"快速"}, {time:"06:53",type:"普通"}, {time:"07:09",type:"新快速"},
+{time:"07:23",type:"区間快速"}, {time:"07:37",type:"快速"}, {time:"07:49",type:"快速"}, {time:"07:56",type:"普通"},
+{time:"08:17",type:"特別快速"}, {time:"08:26",type:"快速"}, {time:"08:36",type:"特別快速"}, {time:"08:45",type:"快速"},
+{time:"08:57",type:"特別快速"}, {time:"09:09",type:"特別快速"}, {time:"09:30",type:"区間快速"}, {time:"09:42",type:"特別快速"},
+{time:"09:55",type:"新快速"}, {time:"09:59",type:"快速"}, {time:"10:18",type:"特別快速"}, {time:"10:23",type:"新快速"},
+{time:"10:37",type:"新快速"}, {time:"10:52",type:"快速"}, {time:"11:07",type:"新快速"}, {time:"11:22",type:"快速"},
+{time:"11:37",type:"新快速"}, {time:"11:52",type:"快速"}, {time:"12:09",type:"新快速"}, {time:"12:22",type:"快速"},
+{time:"12:38",type:"新快速"}, {time:"12:52",type:"快速"}, {time:"13:08",type:"新快速"}, {time:"13:23",type:"快速"},
+{time:"13:38",type:"新快速"}, {time:"13:53",type:"快速"}, {time:"14:09",type:"新快速"}, {time:"14:22",type:"快速"},
+{time:"14:38",type:"新快速"}, {time:"14:52",type:"快速"}, {time:"15:08",type:"新快速"}, {time:"15:23",type:"快速"},
+{time:"15:38",type:"新快速"}, {time:"15:53",type:"快速"}, {time:"16:08",type:"新快速"}, {time:"16:23",type:"快速"},
+{time:"16:38",type:"新快速"}, {time:"16:53",type:"快速"}, {time:"17:08",type:"新快速"}, {time:"17:23",type:"快速"},
+{time:"17:38",type:"新快速"}, {time:"17:53",type:"快速"}, {time:"18:08",type:"新快速"}, {time:"18:24",type:"快速"},
+{time:"18:35",type:"特別快速"}, {time:"18:49",type:"快速"}, {time:"18:55",type:"快速"}, {time:"19:05",type:"特別快速"},
+{time:"19:19",type:"区間快速"}, {time:"19:26",type:"快速"}, {time:"19:36",type:"特別快速"}, {time:"19:49",type:"快速"},
+{time:"19:55",type:"新快速"}, {time:"20:06",type:"特別快速"}, {time:"20:20",type:"快速"}, {time:"20:25",type:"新快速"},
+{time:"20:38",type:"快速"}, {time:"20:53",type:"新快速"}, {time:"21:08",type:"特別快速"}, {time:"21:23",type:"快速"},
+{time:"21:38",type:"特別快速"}, {time:"21:53",type:"快速"}, {time:"22:08",type:"特別快速"}, {time:"22:23",type:"区間快速"},
+{time:"22:38",type:"新快速"}, {time:"22:53",type:"区間快速"}, {time:"23:13",type:"新快速"}, {time:"23:23",type:"区間快速"},
+{time:"23:39",type:"新快速"}, {time:"23:57",type:"快速"}
 ];
 
 /* モード */
@@ -328,7 +275,6 @@ function updateTrains(){
  const next = upcoming[0];
  const second = upcoming[1];
 
- /* ★色付け修正ここ */
 document.getElementById("nextTime").innerText = next.time;
 document.getElementById("nextType").innerText = next.type;
 document.getElementById("nextType").className = "type " + typeMap[next.type];
