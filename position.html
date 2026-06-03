@@ -15,13 +15,15 @@ html, body {
 
 .header {
     height: 50px;
-    background: #0066cc;
+    background: #00704A; /* ★スタバのブランドカラー（ディープグリーン）に変更 */
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 18px;
     font-weight: bold;
+    /* ★明朝体からモダンなゴシック体のフォント（iPhone/Android/PC対応）に変更 */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans JP", sans-serif;
 }
 
 /* スクロールさせる外枠 */
@@ -35,21 +37,12 @@ html, body {
 /* iframe 自体を巨大にして、中身を強制的に全展開する */
 .frame-container iframe {
     width: 100%;
-    height: 13000px; /* ★JR東海のページがすっぽり収まるくらいの高さを指定 */
+    height: 13000px; /* JR東海のページがすっぽり収まるくらいの高さを指定 */
     border: none;
     pointer-events: none; /* iframe内のスクロールを無効化し、親のスクロールを優先 */
 }
 
-#debug {
-    position: fixed;
-    top: 60px;
-    right: 5px;
-    z-index: 9999;
-    background: white;
-    border: 1px solid #999;
-    padding: 8px;
-    font-size: 14px;
-}
+/* ★デバッグ用（#debug）のスタイルは不要になったため削除しました */
 </style>
 </head>
 <body>
@@ -58,21 +51,14 @@ html, body {
 🚃 JR東海 運行情報
 </div>
 
-<div id="debug">読込中...</div>
-
 <div class="frame-container">
     <iframe id="jrframe" src="https://traininfo.jr-central.co.jp/zairaisen/status_detail.html?line=10001&lang=ja"></iframe>
 </div>
 
 <script>
 const container = document.querySelector('.frame-container');
-const debug = document.getElementById('debug');
 
-container.addEventListener('scroll', () => {
-    debug.innerHTML =
-        "scrollTop = " + Math.round(container.scrollTop) +
-        "<br>max = " + (container.scrollHeight - container.clientHeight);
-});
+/* ★デバッグへの文字書き込み処理（addEventListener 内の処理）を削除しました */
 
 window.onload = function() {
     setTimeout(() => {
