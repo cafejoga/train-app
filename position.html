@@ -57,5 +57,25 @@ window.onload = function() {
     document.querySelector('.frame-container').scrollTop = 5600;
 };
 </script>
+<div id="debug"
+     style="
+        position:fixed;
+        top:55px;
+        right:5px;
+        background:white;
+        padding:5px;
+        border:1px solid #ccc;
+        z-index:9999;">
+0
+</div>
+
+<script>
+const c = document.querySelector('.frame-container');
+
+c.addEventListener('scroll', () => {
+    document.getElementById('debug').textContent =
+        Math.round(c.scrollTop);
+});
+</script>
 </body>
 </html>
