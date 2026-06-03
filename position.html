@@ -1,10 +1,8 @@
 <!DOCTYPE html>
-
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>スクロールテスト</title>
 
 <style>
@@ -12,6 +10,7 @@ html, body {
     margin: 0;
     padding: 0;
     height: 100%;
+    overflow: hidden; /* 全体の余計なスクロールを防ぐ */
 }
 
 .header {
@@ -25,17 +24,20 @@ html, body {
     font-weight: bold;
 }
 
+/* スクロールさせる外枠 */
 .frame-container {
     width: 100vw;
-    height: calc(100dvh - 50px);
-    overflow: auto;
+    height: calc(100vh - 50px);
+    overflow: auto; /* ここでスクロールさせる */
     -webkit-overflow-scrolling: touch;
 }
 
+/* iframe 自体を巨大にして、中身を強制的に全展開する */
 .frame-container iframe {
-    width: 200vw;
-    height: 200dvh;
+    width: 100%;
+    height: 3000px; /* ★JR東海のページがすっぽり収まるくらいの高さを指定 */
     border: none;
+    pointer-events: none; /* iframe内のスクロールを無効化し、親のスクロールを優先 */
 }
 
 #debug {
@@ -49,39 +51,34 @@ html, body {
     font-size: 14px;
 }
 </style>
-
 </head>
-
 <body>
 
 <div class="header">
 🚃 JR東海 運行情報 テスト
 </div>
 
-<div id="debug">
-読込中...
-</div>
+<div id="debug">読込中...</div>
 
 <div class="frame-container">
-    <iframe id="jrframe"
-        src="https://traininfo.jr-central.co.jp/zairaisen/status_detail.html?line=10001&lang=ja">
-    </iframe>
+    <iframe id="jrframe" src="https://traininfo.jr-central.co.jp/zairaisen/status_detail.html?line=10001&lang=ja"></iframe>
 </div>
 
 <script>
-
 const container = document.querySelector('.frame-container');
 const debug = document.getElementById('debug');
 
 container.addEventListener('scroll', () => {
     debug.innerHTML =
         "scrollTop = " + Math.round(container.scrollTop) +
-        "<br>max = " +
-        (container.scrollHeight - container.clientHeight);
+        "<br>max = " + (container.scrollHeight - container.clientHeight);
 });
+
 window.onload = function() {
     setTimeout(() => {
-        document.querySelector('.frame-container').scrollTop = 18000;
+        // ★ 1秒後に、外枠のスクロール位置を「運行情報がちょうど見える位置」まで飛ばす
+        // 18000は大きすぎる可能性があるので、まずは 300〜800 辺りで微調整してみてください
+        container.scrollTop = 500; 
     }, 1000);
 };
 </script>
